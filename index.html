@@ -1,0 +1,1715 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vix</title>
+        <style>
+            @font-face {
+                font-family: "VT323";
+                src: url("fonts/VT323-Regular.ttf");
+            }
+
+            @font-face {
+                font-family: "Share Tech Mono";
+                src: url("fonts/ShareTechMono-Regular.ttf");
+            }
+
+            :root {
+                --fg: #e8e8e8;
+                --fg-dim: #aaaaaa;
+                --fg-dimmer: #555555;
+                --bg: #0d0d0d;
+                --bg-window: #141414;
+                --border: 2px solid #e8e8e8;
+                --shadow: 4px 4px 0px #e8e8e8;
+                --font-header: "VT323", monospace;
+                --font-body: "Share Tech Mono", monospace;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                background-color: var(--bg);
+                font-family: var(--font-body);
+                font-size: 16px;
+                color: var(--fg);
+                min-height: 100vh;
+                background-image: repeating-linear-gradient(
+                    45deg,
+                    #111111 0px,
+                    #111111 1px,
+                    #0d0d0d 1px,
+                    #0d0d0d 8px
+                );
+            }
+
+            /* ── MENU BAR ── */
+            .menubar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 24px;
+                border-bottom: 2px solid var(--fg);
+                display: flex;
+                align-items: center;
+                padding: 0 10px;
+                z-index: 1000;
+                font-family: var(--font-header);
+                font-size: 18px;
+                background-image: linear-gradient(
+                    to bottom,
+                    #1a1a1a 0%,
+                    #141414 50%,
+                    #1a1a1a 100%
+                );
+            }
+
+            .menubar-heart {
+                margin-right: 12px;
+                font-size: 15px;
+                padding: 0 4px;
+            }
+
+            .menubar-item {
+                padding: 0 8px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                cursor: default;
+                white-space: nowrap;
+                text-decoration: none;
+                color: var(--fg);
+                font-family: var(--font-header);
+                font-size: 17px;
+            }
+
+            .menubar-item:hover,
+            body:has(#music:target) a[href="#music"],
+            body:has(#homelab:target) a[href="#homelab"],
+            body:has(#privacy:target) a[href="#privacy"],
+            body:has(#footprint:target) a[href="#footprint"],
+            body:has(#about:target) a[href="#about"] {
+                background: var(--fg);
+                color: var(--bg-window);
+            }
+
+            body:not(:has(:target)) a[href="#about"] {
+                background: var(--fg);
+                color: var(--bg-window);
+            }
+
+            .menubar-sep {
+                color: var(--fg-dimmer);
+                padding: 0 2px;
+                font-size: 14px;
+            }
+
+            .menubar-right {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            /* ── PAGES ── */
+            .page {
+                display: none;
+                width: 100%;
+                padding-top: 48px;
+                min-height: 100vh;
+                flex-direction: column;
+                align-items: center;
+                padding-bottom: 60px;
+            }
+
+            #about {
+                display: flex;
+            }
+            :target {
+                display: flex;
+            }
+
+            body:has(#music:target) #about,
+            body:has(#homelab:target) #about,
+            body:has(#privacy:target) #about,
+            body:has(#footprint:target) #about {
+                display: none;
+            }
+
+            /* ── THEME TOGGLE ── */
+            #theme-toggle {
+                display: none;
+            }
+
+            body:has(#theme-toggle:checked) {
+                --fg: #141414;
+                --fg-dim: #444444;
+                --fg-dimmer: #999999;
+                --bg: #f0f0f0;
+                --bg-window: #e8e8e8;
+                --border: 2px solid #141414;
+                --shadow: 4px 4px 0px #141414;
+                background-image: repeating-linear-gradient(
+                    45deg,
+                    #e0e0e0 0px,
+                    #e0e0e0 1px,
+                    #f0f0f0 1px,
+                    #f0f0f0 8px
+                );
+            }
+
+            body:has(#theme-toggle:checked) .menubar {
+                background-image: linear-gradient(
+                    to bottom,
+                    #d0d0d0 0%,
+                    #e0e0e0 50%,
+                    #d0d0d0 100%
+                );
+            }
+
+            body:has(#theme-toggle:checked) .window-titlebar {
+                background-image: repeating-linear-gradient(
+                    to bottom,
+                    #e8e8e8 0px,
+                    #e8e8e8 1px,
+                    #555555 1px,
+                    #555555 2px
+                );
+            }
+
+            body:has(#theme-toggle:checked) .window-title {
+                background: #f0f0f0;
+            }
+
+            /* ── HELP POPOVER ── */
+            #help-toggle {
+                display: none;
+            }
+
+            .help-popover {
+                position: relative;
+                margin-left: 6px;
+            }
+
+            .help-label {
+                width: 16px;
+                height: 16px;
+                border: 1.5px solid var(--fg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--font-header);
+                font-size: 14px;
+                cursor: default;
+                user-select: none;
+                background: var(--bg-window);
+                color: var(--fg);
+            }
+
+            .help-label:hover {
+                background: var(--fg);
+                color: var(--bg-window);
+            }
+
+            .help-content {
+                display: none;
+                position: absolute;
+                top: 26px;
+                right: 0;
+                background: var(--bg-window);
+                border: var(--border);
+                box-shadow: var(--shadow);
+                padding: 10px 14px;
+                width: 220px;
+                font-size: 12px;
+                line-height: 1.6;
+                z-index: 2000;
+                color: var(--fg);
+            }
+
+            #help-toggle:checked ~ .menubar .help-content {
+                display: block;
+            }
+
+            .theme-label {
+                width: 16px;
+                height: 16px;
+                border: 1.5px solid var(--fg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 10px;
+                cursor: default;
+                user-select: none;
+                background: var(--bg-window);
+                color: var(--fg);
+                margin-left: 6px;
+            }
+
+            .theme-label:hover {
+                background: var(--fg);
+                color: var(--bg-window);
+            }
+
+            /* ── WINDOW ── */
+            .window {
+                background: var(--bg-window);
+                border: var(--border);
+                box-shadow: var(--shadow);
+                width: 100%;
+                max-width: 680px;
+                margin: 24px 16px 0;
+            }
+
+            .window-titlebar {
+                border-bottom: 2px solid var(--fg);
+                height: 24px;
+                display: flex;
+                align-items: center;
+                padding: 0 6px;
+                gap: 6px;
+                background-image: repeating-linear-gradient(
+                    to bottom,
+                    #1a1a1a 0px,
+                    #1a1a1a 1px,
+                    #888888 1px,
+                    #888888 2px
+                );
+                position: relative;
+            }
+
+            .window-titlebar-buttons {
+                display: flex;
+                gap: 4px;
+                z-index: 1;
+            }
+
+            .titlebar-btn {
+                width: 12px;
+                height: 12px;
+                border: 1.5px solid var(--fg);
+                background: var(--bg-window);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 8px;
+            }
+
+            .window-title {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #000;
+                color: var(--fg);
+                padding: 0 12px;
+                font-family: var(--font-header);
+                font-size: 16px;
+                letter-spacing: 0.05em;
+                white-space: nowrap;
+                z-index: 1;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                border-left: 2px solid var(--fg);
+                border-right: 2px solid var(--fg);
+            }
+
+            .window-content {
+                padding: 20px 24px;
+            }
+
+            /* ── TYPOGRAPHY ── */
+            h1 {
+                font-family: var(--font-header);
+                font-size: 42px;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                line-height: 1;
+                margin-bottom: 8px;
+            }
+
+            h2 {
+                font-family: var(--font-header);
+                font-size: 26px;
+                font-weight: normal;
+                letter-spacing: 0.02em;
+                margin-bottom: 12px;
+                margin-top: 24px;
+                border-bottom: 2px solid var(--fg);
+                padding-bottom: 4px;
+            }
+
+            h3 {
+                font-family: var(--font-header);
+                font-size: 20px;
+                font-weight: normal;
+                margin-bottom: 6px;
+                margin-top: 14px;
+            }
+
+            p {
+                font-size: 14px;
+                line-height: 1.7;
+                margin-bottom: 12px;
+            }
+
+            a {
+                color: var(--fg);
+                text-decoration: underline;
+            }
+
+            a:hover {
+                background: var(--fg);
+                color: var(--bg-window);
+                text-decoration: none;
+            }
+
+            .divider {
+                border: none;
+                border-top: 2px solid var(--fg);
+                margin: 20px 0;
+            }
+
+            /* ── ABOUT ── */
+            .about-header {
+                display: flex;
+                align-items: flex-start;
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+
+            .about-avatar img {
+                width: 96px;
+                height: 96px;
+                object-fit: cover;
+                display: block;
+                border: var(--border);
+            }
+
+            .about-intro .subtitle {
+                font-size: 13px;
+                color: var(--fg-dim);
+                margin-bottom: 8px;
+            }
+
+            .disclaimer {
+                font-size: 11px;
+                color: var(--fg-dimmer);
+                font-style: italic;
+                margin-top: -4px;
+                margin-bottom: 0;
+            }
+
+            /* ── TAGS ── */
+            .tags {
+                margin: 10px 0;
+            }
+
+            .tag {
+                display: inline-block;
+                border: 1.5px solid var(--fg);
+                padding: 1px 8px;
+                font-size: 12px;
+                margin: 2px;
+            }
+
+            /* ── SOCIAL LINKS ── */
+            .social-links {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                margin: 12px 0;
+            }
+
+            .social-link {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 13px;
+                text-decoration: none;
+                color: var(--fg);
+                border: 1.5px solid var(--fg);
+                padding: 4px 10px;
+            }
+
+            .social-link:hover {
+                background: var(--fg);
+                color: var(--bg-window);
+            }
+
+            .social-link .link-label {
+                font-family: var(--font-header);
+                font-size: 17px;
+                min-width: 80px;
+            }
+
+            /* ── TWO COL / INSET ── */
+            .two-col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+                margin: 16px 0;
+            }
+
+            .inset-box {
+                border: var(--border);
+                padding: 12px 16px;
+                background: var(--bg-window);
+                box-shadow: inset 2px 2px 0 var(--fg-dim);
+            }
+
+            .inset-box h3 {
+                margin-top: 0;
+                font-size: 18px;
+                border-bottom: 1px solid var(--fg-dim);
+                padding-bottom: 4px;
+                margin-bottom: 8px;
+            }
+
+            /* ── TOOL TABLE ── */
+            .tool-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+
+            .tool-table tr {
+                border-bottom: 1px solid var(--fg-dimmer);
+            }
+
+            .tool-table tr:last-child {
+                border-bottom: none;
+            }
+
+            .tool-table td {
+                padding: 5px 4px;
+                vertical-align: top;
+            }
+
+            .tool-table td:first-child {
+                color: var(--fg-dim);
+                width: 90px;
+                white-space: nowrap;
+            }
+
+            /* ── REF SHEET ── */
+            .ref-sheet {
+                border: var(--border);
+                box-shadow: var(--shadow);
+                overflow: hidden;
+                width: 100%;
+            }
+
+            .ref-image {
+                width: 100%;
+                display: block;
+            }
+
+            /* ── MUSIC: ROTATION ── */
+            .rotation-embed {
+                margin: 16px 0;
+                border: var(--border);
+                box-shadow: var(--shadow);
+                overflow: hidden;
+                background: #000;
+            }
+
+            .rotation-embed iframe {
+                width: 100%;
+                display: block;
+                border: none;
+            }
+
+            .rotation-label {
+                font-size: 13px;
+                color: var(--fg-dim);
+                padding: 6px 10px;
+                border-top: 1px solid var(--fg-dimmer);
+                background: var(--bg-window);
+            }
+
+            /* ── MUSIC: ALBUM GRID ── */
+            .album-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+                margin: 16px 0;
+            }
+
+            .album-card {
+                position: relative;
+                border: var(--border);
+                overflow: hidden;
+                aspect-ratio: 1;
+                cursor: default;
+            }
+
+            .album-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+            .album-card .album-placeholder {
+                width: 100%;
+                height: 100%;
+                background: var(--bg-window);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: var(--font-header);
+                font-size: 13px;
+                color: var(--fg-dimmer);
+                text-align: center;
+                padding: 8px;
+            }
+
+            .album-card .album-overlay {
+                position: absolute;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.88);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 10px;
+                opacity: 0;
+                transition: opacity 0.15s;
+            }
+
+            .album-card:hover .album-overlay {
+                opacity: 1;
+            }
+
+            .album-overlay .album-title {
+                font-family: var(--font-header);
+                font-size: 16px;
+                color: var(--fg);
+                display: block;
+                margin-bottom: 2px;
+            }
+
+            .album-overlay .album-artist {
+                font-size: 11px;
+                color: var(--fg-dim);
+                display: block;
+            }
+
+            .album-overlay .album-year {
+                font-size: 11px;
+                color: var(--fg-dimmer);
+                display: block;
+                margin-top: 4px;
+            }
+
+            /* ── STEP CARDS ── */
+            .step-card {
+                border: var(--border);
+                padding: 14px 16px;
+                margin: 10px 0;
+                box-shadow: 3px 3px 0 var(--fg);
+            }
+
+            .step-card h3 {
+                margin-top: 0;
+                font-size: 20px;
+            }
+
+            .step-label {
+                display: inline-block;
+                border: 1.5px solid var(--fg);
+                padding: 0 6px;
+                font-size: 11px;
+                font-family: var(--font-body);
+                margin-bottom: 6px;
+                background: var(--fg);
+                color: var(--bg-window);
+            }
+
+            .step-label.medium {
+                background: var(--bg-window);
+                color: var(--fg);
+            }
+
+            .step-label.hard {
+                background: var(--bg-window);
+                color: var(--fg-dim);
+                border-color: var(--fg-dim);
+            }
+
+            /* ── FOOTER ── */
+            .site-footer {
+                font-size: 11px;
+                color: var(--fg-dim);
+                text-align: center;
+                padding: 20px 16px 0;
+                width: 100%;
+                max-width: 680px;
+            }
+
+            /* ── SCROLLBAR ── */
+            ::-webkit-scrollbar {
+                width: 12px;
+            }
+            ::-webkit-scrollbar-track {
+                background: var(--bg-window);
+                border-left: 1px solid var(--fg);
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--fg-dim);
+                border: 1px solid var(--fg);
+            }
+
+            @media (max-width: 600px) {
+                .two-col {
+                    grid-template-columns: 1fr;
+                }
+                .about-header {
+                    flex-direction: column;
+                }
+                .menubar-item {
+                    padding: 0 5px;
+                    font-size: 14px;
+                }
+                .album-grid {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+        </style>
+    </head>
+
+    <input type="checkbox" id="theme-toggle" />
+    <input type="checkbox" id="help-toggle" />
+
+    <nav class="menubar">
+        <span class="menubar-heart">♥</span>
+        <a href="#about" class="menubar-item">About</a>
+        <a href="#music" class="menubar-item">Music</a>
+        <span class="menubar-sep">|</span>
+        <a href="#footprint" class="menubar-item">Footprint</a>
+        <a href="#homelab" class="menubar-item">Homelab</a>
+        <a href="#privacy" class="menubar-item">Privacy</a>
+        <div class="menubar-right">
+            <div class="help-popover">
+                <label class="help-label" for="help-toggle">?</label>
+                <div class="help-content">
+                    <strong
+                        style="font-family: var(--font-header); font-size: 16px"
+                        >about this site</strong
+                    ><br /><br />
+                    made with plain html &amp; css.<br />
+                    no javascript. <br /><br />
+                    <a href="mailto:1_email.griffon@icloud.com">contact me</a>
+                </div>
+            </div>
+            <label class="theme-label" for="theme-toggle">◑</label>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════════════════════
+     ABOUT
+═══════════════════════════════════════ -->
+    <div class="page" id="about">
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-titlebar-buttons">
+                    <div class="titlebar-btn">&#x25A0;</div>
+                    <div class="titlebar-btn"></div>
+                </div>
+                <div class="window-title">about me</div>
+            </div>
+            <div class="window-content">
+                <div class="about-header">
+                    <div class="about-avatar">
+                        <img src="av.webp" alt="Vix" />
+                    </div>
+                    <div class="about-intro">
+                        <h1>Vix</h1>
+                        <p class="subtitle">black cat :3</p>
+                        <div class="tags">
+                            <span class="tag">Black Metal</span>
+                            <span class="tag">Digital Minimalism</span>
+                            <span class="tag">Free Software</span>
+                            <span class="tag">Neofolk</span>
+                            <span class="tag">Privacy &amp; Security</span>
+                            <span class="tag">Self-Hosting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider" />
+
+                <p>
+                    hi! i'm Vix. i love music, tech, and freedom! i'm a huge
+                    advocate for digital sovereignty, maintaining good personal
+                    OPSEC, and owning your data! this lil website is just meant
+                    to tell you a bit about me, share resources that i found
+                    helpful, and provide recommendations for some useful tools
+                    broadly relating to protecting and exercising your digital
+                    rights! ^-^
+                </p>
+
+                <p class="disclaimer">
+                    i am not affiliated with any tools or services mentioned.
+                    all tools, resources, and services that i recommend are only
+                    ones i have had good personal experience with. do your own
+                    research.
+                </p>
+
+                <h2>Links</h2>
+                <div class="social-links">
+                    <a href="#" class="social-link">
+                        <span class="link-label">Discord</span>
+                        <span>@vixnoct</span>
+                    </a>
+                    <a href="#" class="social-link">
+                        <span class="link-label">Twitter</span>
+                        <span>@vixnoct</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-titlebar-buttons">
+                    <div class="titlebar-btn">&#x25A0;</div>
+                    <div class="titlebar-btn"></div>
+                </div>
+                <div class="window-title">my fursona</div>
+            </div>
+            <div class="window-content">
+                <div class="ref-sheet">
+                    <img src="ref.webp" alt="Vix ref sheet" class="ref-image" />
+                </div>
+
+                <div style="margin-top: 16px">
+                    <div class="inset-box">
+                        <h3>Stats</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Name</td>
+                                <td>Vix</td>
+                            </tr>
+                            <tr>
+                                <td>Species</td>
+                                <td>Domestic Cat</td>
+                            </tr>
+                            <tr>
+                                <td>Gender</td>
+                                <td>Male</td>
+                            </tr>
+                            <tr>
+                                <td>Height</td>
+                                <td>5'6</td>
+                            </tr>
+                            <tr>
+                                <td>Colors</td>
+                                <td>Black - Gray - Blue</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="divider" />
+
+                <p>
+                    my fursona is a black cat. his name is vix (just like my
+                    display name!) not much of a backstory to tell, i just
+                    really like black cats!
+                </p>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            vix :3 - html &amp; css only - no javascript
+        </footer>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     MUSIC
+═══════════════════════════════════════ -->
+    <div class="page" id="music">
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-titlebar-buttons">
+                    <div class="titlebar-btn">&#x25A0;</div>
+                    <div class="titlebar-btn"></div>
+                </div>
+                <div class="window-title">music i like</div>
+            </div>
+            <div class="window-content">
+                <p>
+                    i love music! my favorite music genres have been black metal
+                    and neofolk for quite a while now, but i'll occasionally
+                    branch out. i avoid streaming services, and instead i
+                    directly support my favorite artists by collecting cds and
+                    merchandise! the most popular streaming services pay artists
+                    terribly, so i always recommend supporting your favorite
+                    artists directly if it's within your financial means to do
+                    so.
+                </p>
+
+                <h2>Currently in Rotation</h2>
+                <!-- to update: go to YouTube → Share → Embed → copy the URL from src="..." -->
+                <div class="rotation-embed">
+                    <iframe
+                        src="https://invidious.nerdvpn.de/embed/cJDhFUQecFo"
+                        height="280"
+                        allowfullscreen
+                    ></iframe>
+                </div>
+
+                <h2>Favorite Artists</h2>
+                <div class="two-col">
+                    <div class="inset-box">
+                        <h3>Black Metal</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Agalloch</td>
+                            </tr>
+                            <tr>
+                                <td>Drudkh</td>
+                            </tr>
+                            <tr>
+                                <td>Leviathan</td>
+                            </tr>
+                            <tr>
+                                <td>Panopticon</td>
+                            </tr>
+                            <tr>
+                                <td>Urfaust</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Neofolk</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>:Of the Wand &amp; the Moon:</td>
+                            </tr>
+                            <tr>
+                                <td>Death in June</td>
+                            </tr>
+                            <tr>
+                                <td>Darkwood</td>
+                            </tr>
+                            <tr>
+                                <td>Neutral</td>
+                            </tr>
+                            <tr>
+                                <td>Nature &amp; Organisation</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Other</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>David Bowie</td>
+                            </tr>
+                            <tr>
+                                <td>Immortal Technique</td>
+                            </tr>
+                            <tr>
+                                <td>Life on Venus</td>
+                            </tr>
+                            <tr>
+                                <td>Phil Collins</td>
+                            </tr>
+                            <tr>
+                                <td>The Mamas & the Papas</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Top Genres</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Black Metal</td>
+                            </tr>
+                            <tr>
+                                <td>Doom Metal</td>
+                            </tr>
+                            <tr>
+                                <td>Folk Metal</td>
+                            </tr>
+                            <tr>
+                                <td>Neoclassical</td>
+                            </tr>
+                            <tr>
+                                <td>Neofolk</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <h2>Favorite Albums</h2>
+                <div class="album-grid">
+                    <div class="album-card">
+                        <img src="albums/1.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title">The Mantle</span>
+                            <span class="album-artist">Agalloch</span>
+                            <span class="album-year">2002</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/2.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title">Pale Folklore</span>
+                            <span class="album-artist">Agalloch</span>
+                            <span class="album-year">2002</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/3.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title"
+                                >They Often See Dreams About the Spring</span
+                            >
+                            <span class="album-artist">Drudkh</span>
+                            <span class="album-year">2018</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/4.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title"
+                                >The Tenth Sub Level of Suicide</span
+                            >
+                            <span class="album-artist">Leviathan</span>
+                            <span class="album-year">2003</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/5.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title"
+                                >Your Love Can't Hold This Wreath of
+                                Sorrow</span
+                            >
+                            <span class="album-artist"
+                                >:Of the Wand & the Moon:</span
+                            >
+                            <span class="album-year">2021</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/6.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title"
+                                >But, What Ends When the Symbols Shatter?</span
+                            >
+                            <span class="album-artist">Death in June</span>
+                            <span class="album-year">1992</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/7.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title">Verlorene Welt</span>
+                            <span class="album-artist">Darkwood</span>
+                            <span class="album-year">2025</span>
+                        </div>
+                    </div>
+                    <div class="album-card">
+                        <img src="albums/8.jpg" alt="Album Title" />
+                        <div class="album-overlay">
+                            <span class="album-title"
+                                >Serpents in the Dawn</span
+                            >
+                            <span class="album-artist">Neutral</span>
+                            <span class="album-year">2008</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            vix :3 - html &amp; css only - no javascript
+        </footer>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     FOOTPRINT
+═══════════════════════════════════════ -->
+    <div class="page" id="footprint">
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-titlebar-buttons">
+                    <div class="titlebar-btn">&#x25A0;</div>
+                    <div class="titlebar-btn"></div>
+                </div>
+                <div class="window-title">erase your digital footprint</div>
+            </div>
+            <div class="window-content">
+                <p>
+                    bad actors like big corporations, law enforcement, and
+                    stalkers rely on the internet to track you down and harass
+                    you. this guide tells you some steps you can take to erase
+                    your digital footprint, in a tiered order of difficulty and
+                    practicality. before doing anything, it's important to
+                    determine your
+                    <a
+                        href="https://www.privacyguides.org/en/basics/threat-modeling/"
+                        target="_blank"
+                        >threat model</a
+                    >.
+                </p>
+
+                <h2>Tier 1</h2>
+                <p>
+                    these are the essentials for everyday people. for anyone who
+                    doesn't want to be easily found by strangers, employers, or
+                    data brokers.
+                </p>
+
+                <div class="step-card">
+                    <span class="step-label">BEGINNER</span>
+                    <h3>1. Strip File Metadata</h3>
+                    <p>
+                        one of the most common ways people are traced online is
+                        through metadata in the files they share. the first
+                        thing you should do is disable location access for the
+                        camera on your smartphone, which is often on by default.
+                        this is already a big step, but you can take it even
+                        further by stripping metadata from every file before you
+                        share it online. for the desktop, i recommend
+                        <a href="https://exiftool.org" target="_blank"
+                            >ExifTool</a
+                        >, and for mobile,
+                        <a
+                            href="https://github.com/Tommy-Geenexus/exif-eraser"
+                            target="_blank"
+                            >ExifEraser</a
+                        >. while many social media platforms nowadays strip
+                        photo and video metadata by default, it's still a good
+                        idea to get in the habit of doing it yourself.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label">BEGINNER</span>
+                    <h3>2. Google Yourself</h3>
+                    <p>
+                        look up your full name and phone number to see what pops
+                        up. this will tell you exactly what's out there before
+                        you start removing it. try Google, Bing,
+                        <a
+                            href="https://www.truepeoplesearch.com"
+                            target="_blank"
+                            >TruePeopleSearch</a
+                        >, and
+                        <a href="https://www.numlookup.com" target="_blank"
+                            >NumLookup</a
+                        >
+                        first. you can also sign up for
+                        <a href="https://www.optery.com" target="_blank"
+                            >Optery</a
+                        >'s free plan to get a comprehensive list of all the
+                        websites that you appear on. if any shitty websites ask
+                        you to pay for access to your personal information
+                        records, don't.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label">BEGINNER</span>
+                    <h3>3. Request Removal From People-Search Sites</h3>
+                    <p>
+                        how you approach this depends on the severity. if you
+                        couldn't find anything about yourself on the internet,
+                        you're probably better off not doing anything at all. if
+                        there are only a select number of websites that you need
+                        removed from, you can request removal manually.
+                        <a
+                            href="https://inteltechniques.com/workbook.html"
+                            target="_blank"
+                            >IntelTechniques</a
+                        >
+                        is a great resource to look into. in more severe cases,
+                        it's a good idea to use a paid opt-out service that can
+                        handle it all for you. there are plenty of services that
+                        do this, but the only two that i recommend are
+                        <a href="https://www.easyoptouts.com" target="_blank"
+                            >EasyOptOuts</a
+                        >
+                        and
+                        <a href="https://www.optery.com" target="_blank"
+                            >Optery</a
+                        >. the issue with most other services like this
+                        (especially the free ones offered by banks) is that they
+                        simply blast out a cookie-cutter email requesting the
+                        removal of your personal information to every single
+                        data broker they have on file. If they didn't have your
+                        information before, they do now. only use a service that
+                        performs opt-outs after verifying that your information
+                        actually exists there in the first place.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label">BEGINNER</span>
+                    <h3>4. Lock Down Your Social Media</h3>
+                    <p>
+                        if you are going to use social media, it's a good idea
+                        to set profiles to private, turn off all device
+                        permissions, disable all personalization settings, and
+                        if possible, randomize your profile details. there's
+                        often no good reason to have your personal accounts set
+                        to public, and doing so ensures everything you ever post
+                        or do will be scraped and archived permanently.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label">BEGINNER</span>
+                    <h3>5. Audit Smartphone App Permissions</h3>
+                    <p>
+                        apps on your smartphone should only have the absolute
+                        minimum permissions they need to function at any given
+                        moment. this greatly reduces your attack surface and
+                        potential for vulnerabilites. on iOS, go to Settings →
+                        Privacy & Security → Safety Check → Manage Sharing &
+                        Access and on Step 2, tap "Select all & Stop Access."
+                        this will force all apps to re-prompt you for
+                        permissions, and you can grant them as needed. on
+                        Android, go to Settings → Privacy → Permission Manager
+                        and revoke all unecessary app permissions.
+                    </p>
+                </div>
+
+                <h2>Tier 2</h2>
+                <p>
+                    for those who want to stop creating new footprint and start
+                    taking their online privacy seriously. for anyone who
+                    doesn't want to be easily found or tracked, and especially
+                    for those concerned about organized harassment, civil
+                    litigation, private investigators, or tracking and data
+                    collection by large corporations.
+                </p>
+
+                <div class="step-card">
+                    <span class="step-label medium">INTERMEDIATE</span>
+                    <h3>5. Delete Online Accounts</h3>
+                    <p>
+                        delete as many online accounts and apps as possible,
+                        especially social media. not only is it good for your
+                        mental health, but it's a huge improvement for your
+                        privacy. social media algorithms are inherently
+                        exploitative. it's understandable that there are going
+                        to be certain social platforms that you simply aren't
+                        willing to give up. for those, refer to step 4. you
+                        should make an effort to keep your presence online as
+                        minimal as possible.
+                        <a href="https://justdeleteme.xyz" target="_blank"
+                            >JustDeleteMe</a
+                        >
+                        is a great tool to find the deletion page for hundreds
+                        of services.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label medium">INTERMEDIATE</span>
+                    <h3>6. Regularly Erase Your Post/Message History</h3>
+                    <p>
+                        as a general rule, you should never post anything on a
+                        public-facing social platform that you aren't
+                        comfortable with being permanently archived, and you
+                        should never message someone with personal or intimate
+                        information via unsecure channels. however, if you are
+                        going to do this, it's a good idea to regularly scrub
+                        your post and message history. if you don't have an
+                        extensive post or message history on a given platform,
+                        you can simply do this manually. if you have a lot to
+                        erase and want something automated, a solid all-around
+                        tool for this is
+                        <a href="https://redact.dev" target="_blank">Redact</a>,
+                        but it's expensive and might not be necessary if you
+                        don't need all of its features. many free options exist
+                        for specific websites, it just takes a quick search. if
+                        you use discord,
+                        <a href="https://undiscord.com" target="_blank"
+                            >Undiscord</a
+                        >
+                        is a great free tool to get the job done.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label medium">INTERMEDIATE</span>
+                    <h3>7. Compartmentalize</h3>
+                    <p>
+                        your browsing habits and online accounts should be
+                        compartmentalized with different browser profiles,
+                        perceived identities, phone numbers, usernames, emails,
+                        and profile pictures. for usernames, you can simply pick
+                        a random assortment of words or characters. however, you
+                        don't want to have a clear pattern. don't make every
+                        online username the same 16 character assortment of
+                        letters and numbers. change it up every time. for email,
+                        you can use one of the many aliasing services, such as
+                        <a href="https://simplelogin.io" target="_blank"
+                            >SimpleLogin</a
+                        >,
+                        <a href="https://addy.io" target="_blank">addy.io</a>,
+                        or even Apple's
+                        <a
+                            href="https://support.apple.com/guide/iphone/create-and-manage-hide-my-email-addresses-iphcb02e76f7/ios"
+                            target="_blank"
+                            >Hide My Email</a
+                        >. for phone numbers, consider getting a few VOIP
+                        numbers and using a one-time phone verification service
+                        like
+                        <a href="https://juicysms.com/" target="_blank"
+                            >JuicySMS</a
+                        >. one of the most common ways Tor users have their
+                        identity exposed is by failing at this very basic OPSEC.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label medium">INTERMEDIATE</span>
+                    <h3>8. Use Virtual, Disposable Cards (FIAT)</h3>
+                    <p>
+                        there's almost no reason to have your real information
+                        associated with purchases you make online. many credit
+                        card issuers offer free services that do this, but you
+                        should only use these if they allow name anonymization
+                        as well. i recommend
+                        <a href="https://www.privacy.com" target="_blank"
+                            >Privacy.com</a
+                        >. they have a pretty generous free tier and allow both
+                        vendor-locked and disposable cards. when making card
+                        purchases online, use a virtual card number, fake name,
+                        and fake address (within your zip code).
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label medium">INTERMEDIATE</span>
+                    <h3>6. Reduce Your Browser Fingerprint</h3>
+                    <p>
+                        your browser leaks a ton of information about you, even
+                        without cookies. a combination of browser identifiers
+                        are used to uniquely identify you across the web. the
+                        best solution for this is to switch to a browser
+                        dedicated to reducing fingerprinting and making you
+                        blend in with everyone else, such as
+                        <a
+                            href="https://www.torproject.org/download/"
+                            target="_blank"
+                            >Tor Browser</a
+                        >
+                        or
+                        <a href="https://mullvad.net/en/browser" target="_blank"
+                            >Mullvad Browser</a
+                        >. the second best solution is to use a trusted VPN to
+                        mask your IP, minimize extension usage, and switch to a
+                        privacy-respecting browser that receives regular
+                        security patches, such as
+                        <a href="https://orionbrowser.com" target="_blank"
+                            >Orion</a
+                        >,
+                        <a
+                            href="https://github.com/GrapheneOS/Vanadium"
+                            target="_blank"
+                            >Vanadium</a
+                        >, or
+                        <a
+                            href="https://github.com/secureblue/Trivalent"
+                            target="_blank"
+                            >Trivalent</a
+                        >. for any other browser, such as Safari, keep it as
+                        bone stock as possible. please keep in mind that any
+                        setting you change and any extension you install in any
+                        browser is a potential fingerprinting technique.
+                    </p>
+                </div>
+
+                <h2>Tier 3</h2>
+                <p>
+                    for anyone trying to maximize their privacy while using the
+                    internet. builds on everything in the previous tiers, and is
+                    especially relevant for those concerned about law
+                    enforcement surveillance, intelligence agencies,
+                    state-sponsored actors, corporate espionage, or anyone whose
+                    safety depends on their digital identity remaining unknown,
+                    such as journalists and activists.
+                </p>
+
+                <div class="step-card">
+                    <span class="step-label hard">ADVANCED</span>
+                    <h3>9. Browse With Tor</h3>
+                    <p>
+                        the
+                        <a
+                            href="https://www.torproject.org/download/"
+                            target="_blank"
+                            >Tor Browser</a
+                        >
+                        is one of the best ways to truly browse the internet
+                        anonymously. tor routes your traffic through three
+                        independently operated relays. an entry node, a middle
+                        relay, and an exit node. no single relay knows both who
+                        you are and what you're accessing.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label hard">ADVANCED</span>
+                    <h3>10. Use Monero (XMR) For Online Purchases</h3>
+                    <p>
+                        Monero is the gold standard for financial privacy. it's
+                        an untraceable decentralized cryptocurrency that ensures
+                        anonymity and private transactions through various
+                        cryptographic techniques. obtaining Monero is becoming
+                        increasingly more difficult due to government pressure
+                        and censorship, but the best way I've found is using a
+                        decentralized Tor exchange like
+                        <a href="https://haveno.exchange" target="_blank"
+                            >Haveno</a
+                        >
+                        to purchase XMR with FIAT money. for a list of websites
+                        and services that support Monero purchases, refer to
+                        <a href="https://monerica.com" target="_blank"
+                            >Monerica</a
+                        >. to make purchases online with XMR for websites that
+                        don't already support it, you can use a service like
+                        <a href="https://coincards.com" target="_blank"
+                            >Coincards</a
+                        >
+                        to purchase gift cards with Monero.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label hard">ADVANCED</span>
+                    <h3>11. Switch Your Daily Operating System</h3>
+                    <p>
+                        for the desktop, the gold standard for everyday usage is
+                        <a href="https://www.qubes-os.org" target="_blank"
+                            >Qubes OS</a
+                        >. Qubes is a Xen-based operating system that runs every
+                        application in its own isolated virtual machine called a
+                        "qube." Qubes has Whonix integration, which makes it
+                        easy to safely and anonymously browse the internet with
+                        Tor. for mobile, the only recommended operating system
+                        is
+                        <a href="https://grapheneos.org" target="_blank"
+                            >GrapheneOS</a
+                        >. GrapheneOS doesn't require an account and provides a
+                        vast array of privacy and security improvements over
+                        other mobile operating systems.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-label hard">ADVANCED</span>
+                    <h3>12. Leave The Smartphone Behind</h3>
+                    <p>
+                        regardless of the operating system your phone is using,
+                        good cellular network privacy is basically impossible.
+                        your carrier knows every cell tower your phone is
+                        connected to, and cell tower triangulation means your
+                        exact pinpoint location is known at all times. if you
+                        don't feel comfortable having your location tracked,
+                        leave your phone powered on at home. this just makes you
+                        look like a person who stayed home, while a phone that
+                        goes dark for a regularly scheduled period of time can
+                        raise some flags. if you're travelling and must bring
+                        your phone, consider a faraday bag, but be careful not
+                        to create a pattern of behavior.
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <h3>13. Use Common Sense</h3>
+                    <p>
+                        absolutely nothing you do matters if your behavior gives
+                        you away. in the vast majority of cases, leaks caused by
+                        poor OPSEC are behavioral and not insufficient tools.
+                        the person at home using Tor on their outdated Windows 8
+                        craptop with perfect discipline and the ability to keep
+                        their mouth shut is much harder to track than the person
+                        running Qubes-Whonix on rotating public WiFi networks
+                        who brags on the internet over multiple forums with the
+                        same username.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            vix :3 - html &amp; css only - no javascript
+        </footer>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     HOMELAB
+═══════════════════════════════════════ -->
+    <div class="page" id="homelab">
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-titlebar-buttons">
+                    <div class="titlebar-btn">&#x25A0;</div>
+                    <div class="titlebar-btn"></div>
+                </div>
+                <div class="window-title">homelab</div>
+            </div>
+            <div class="window-content">
+                <p>
+                    my home server is an HP EliteDesk 800 G5 SFF that I bought
+                    for around ~$100. everything is accessible only through
+                    Tailscale, including
+                    <a
+                        href="https://tailscale.com/docs/features/tailscale-ssh"
+                        target="_blank"
+                        >SSH</a
+                    >.
+                </p>
+                <div class="two-col">
+                    <div class="inset-box">
+                        <h3>Hardware</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>CPU</td>
+                                <td>Intel i5-9500</td>
+                            </tr>
+                            <tr>
+                                <td>RAM</td>
+                                <td>1x16GB DDR4</td>
+                            </tr>
+                            <tr>
+                                <td>OS</td>
+                                <td>Debian GNU/Linux 13</td>
+                            </tr>
+                            <tr>
+                                <td>Data</td>
+                                <td>2X 4TB T500 NVMe (ZFS)</td>
+                            </tr>
+                            <tr>
+                                <td>Backup</td>
+                                <td>8TB WD HDD (EXT4)</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Services</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Management</td>
+                                <td>Dockge</td>
+                            </tr>
+                            <tr>
+                                <td>Monitoring</td>
+                                <td>Beszel</td>
+                            </tr>
+                            <tr>
+                                <td>Containers</td>
+                                <td>Navidrome<br />Jellyfin<br />Invidious</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            vix :3 - html &amp; css only - no javascript
+        </footer>
+    </div>
+
+    <!-- ══════════════════════════════════════
+     PRIVACY & SECURITY
+═══════════════════════════════════════ -->
+    <div class="page" id="privacy">
+        <div class="window">
+            <div class="window-titlebar">
+                <div class="window-titlebar-buttons">
+                    <div class="titlebar-btn">&#x25A0;</div>
+                    <div class="titlebar-btn"></div>
+                </div>
+                <div class="window-title">privacy &amp; security</div>
+            </div>
+            <div class="window-content">
+                <p>
+                    general hardware and software tools that i either actively
+                    use or have used in the past and personally recommend. it's
+                    crucial to note that security and privacy are not the same
+                    thing. to make the list here, the product must meet one of
+                    the following criteria:<br />
+                    - strong privacy and security by default<br />
+                    - strong security by default with the ability to easily
+                    obtain strong privacy<br />
+                    - strong privacy by default with the ability to easily
+                    obtain strong security
+                </p>
+
+                <div class="two-col">
+                    <div class="inset-box">
+                        <h3>Operating Systems</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Desktop</td>
+                                <td>
+                                    macOS¹<br />Qubes<br />Secureblue<br />Tails<br />Whonix
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Mobile</td>
+                                <td>GrapheneOS<br />iOS²</td>
+                            </tr>
+                            <tr>
+                                <td>Server</td>
+                                <td>
+                                    Secureblue<br />Fedora IoT<br />openSUSE
+                                    MicroOS
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Browsing</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Desktop</td>
+                                <td>
+                                    Mullvad Browser<br />Orion<br />Tor
+                                    Browser<br />Trivalent
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Mobile</td>
+                                <td>Orion<br />Vanadium</td>
+                            </tr>
+                            <tr>
+                                <td>VPN</td>
+                                <td>iVPN<br />Mullvad</td>
+                            </tr>
+                            <tr>
+                                <td>Search</td>
+                                <td>
+                                    Brave Search<br />DuckDuckGo<br />Kagi<br />SearXNG<br />Startpage
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Account Security</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Passwords</td>
+                                <td>
+                                    Bitwarden<br />KeePassXC<br />Strongbox<br />Vaultwarden
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2FA</td>
+                                <td>
+                                    2FAS<br />Aegis Authenticator<br />NitroKey<br />YubiKey
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Self-Hosting</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Files</td>
+                                <td>Nextcloud</td>
+                            </tr>
+                            <tr>
+                                <td>Music</td>
+                                <td>Finamp<br />Navidrome<br />Slskd</td>
+                            </tr>
+                            <tr>
+                                <td>Video</td>
+                                <td>Jellyfin</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Social</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Messaging</td>
+                                <td>
+                                    Briar<br />iMessage<br />Matrix<br />Session<br />Signal
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Media</td>
+                                <td>Lemmy<br />Mastodon</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="inset-box">
+                        <h3>Finance</h3>
+                        <table class="tool-table">
+                            <tr>
+                                <td>Coins</td>
+                                <td>Litecoin MWEB<br />Monero XMR</td>
+                            </tr>
+                            <tr>
+                                <td>Wallets</td>
+                                <td>
+                                    Cake Wallet<br />Feather Wallet<br />Monero
+                                    GUI<br />Trezor
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Exchanges</td>
+                                <td>CoinCards<br />Haveno</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <hr class="divider" />
+
+                <p style="font-size: 11px; color: var(--fg-dimmer)">
+                    ¹ macOS on modern Apple hardware is decently secure but not
+                    very private by default. Apple collects telemetry, app usage
+                    data, and crash reports continuously. For optimal macOS
+                    privacy settings, see
+                    <a
+                        href="https://www.privacyguides.org/en/os/macos-overview/"
+                        style="color: var(--fg-dimmer)"
+                        >macOS Overview</a
+                    >.
+                    <br />
+                    ² Modern iPhones, especially
+                    <a
+                        href="https://www.macrumors.com/2025/09/10/iphone-17-new-memory-security-feature/"
+                        style="color: var(--fg-dimmer)"
+                        >iPhone 17 and later</a
+                    >, are extremely secure but not very private by default. iOS
+                    unfortunately lacks the fine-tuning offered by macOS, but
+                    you can still obtain decent privacy by following the steps
+                    shown on
+                    <a
+                        href="https://www.privacyguides.org/en/os/ios-overview/"
+                        style="color: var(--fg-dimmer)"
+                        >iOS Overview</a
+                    >.
+                </p>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            vix :3 - html &amp; css only - no javascript
+        </footer>
+    </div>
+</html>
