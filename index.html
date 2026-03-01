@@ -514,26 +514,83 @@
             }
 
             /* ── MUSIC: ROTATION ── */
-            .rotation-embed {
+
+            .rotation-card {
+                display: flex;
+                align-items: stretch;
                 margin: 16px 0;
                 border: var(--border);
                 box-shadow: var(--shadow);
                 overflow: hidden;
                 background: #000;
+                text-decoration: none;
+                color: var(--fg);
+                transition: background 0.15s;
+            }
+
+            .rotation-controls {
+                display: flex;
+                flex-direction: column;
+                gap: 1px;
+                margin-top: 4px;
+            }
+
+            .rotation-card:hover {
+                background: var(--bg-window);
+            }
+
+            .rotation-art {
+                width: 160px;
+                min-height: 160px;
+                object-fit: cover;
+                display: block;
+                border-right: var(--border);
+                flex-shrink: 0;
+                filter: grayscale(30%);
+            }
+
+            .rotation-info {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 16px 20px;
+                gap: 4px;
+            }
+
+            .rotation-artist {
+                font-size: 11px;
+                color: var(--fg-dim);
+                text-transform: uppercase;
+                letter-spacing: 2px;
+            }
+            .rotation-title {
+                font-size: 20px;
+                color: var(--fg);
+            }
+            .rotation-album {
+                font-size: 13px;
+                color: var(--fg-dim);
+                font-style: italic;
+            }
+            .rotation-cta {
+                margin-top: 12px;
+                font-size: 12px;
+                color: var(--fg-dim);
+                border: 1px solid var(--fg-dimmer);
+                padding: 4px 8px;
+                display: inline-block;
+                width: fit-content;
+                text-decoration: none;
+            }
+            .rotation-card:hover .rotation-cta {
+                color: var(--fg);
+                border-color: var(--fg);
             }
 
             .rotation-embed iframe {
                 width: 100%;
                 display: block;
                 border: none;
-            }
-
-            .rotation-label {
-                font-size: 13px;
-                color: var(--fg-dim);
-                padding: 6px 10px;
-                border-top: 1px solid var(--fg-dimmer);
-                background: var(--bg-window);
             }
 
             /* ── MUSIC: ALBUM GRID ── */
@@ -695,8 +752,8 @@
         <a href="#music" class="menubar-item">Music</a>
         <span class="menubar-sep">|</span>
         <a href="#footprint" class="menubar-item">Footprint</a>
-        <a href="#homelab" class="menubar-item">Homelab</a>
         <a href="#privacy" class="menubar-item">Privacy</a>
+        <a href="#homelab" class="menubar-item">Homelab</a>
         <div class="menubar-right">
             <div class="help-popover">
                 <label class="help-label" for="help-toggle">?</label>
@@ -859,13 +916,29 @@
                 </p>
 
                 <h2>Currently in Rotation</h2>
-                <!-- to update: go to YouTube → Share → Embed → copy the URL from src="..." -->
-                <div class="rotation-embed">
-                    <iframe
-                        src="https://www.youtube-nocookie.com/embed/cJDhFUQecFo"
-                        height="280"
-                        allowfullscreen
-                    ></iframe>
+                <div class="rotation-card">
+                    <img
+                        src="albums/9.webp"
+                        alt="Forseti - Lichterflug album art"
+                        class="rotation-art"
+                    />
+                    <div class="rotation-info">
+                        <span class="rotation-artist">Forseti</span>
+                        <span class="rotation-title">Lichterflug</span>
+                        <span class="rotation-album">Erde</span>
+                        <div class="rotation-controls">
+                            <audio
+                                controls
+                                src="albums/lichterflug.opus"
+                            ></audio>
+                            <a
+                                href="https://inv.nadeko.net/watch?v=cJDhFUQecFo"
+                                rel="noopener noreferrer"
+                                class="rotation-cta"
+                                >▶ listen on invidious</a
+                            >
+                        </div>
+                    </div>
                 </div>
 
                 <h2>Favorite Artists</h2>
@@ -926,7 +999,7 @@
                                 <td>Phil Collins</td>
                             </tr>
                             <tr>
-                                <td>The Mamas & the Papas</td>
+                                <td>The Mamas &amp; the Papas</td>
                             </tr>
                         </table>
                     </div>
@@ -1201,7 +1274,7 @@
 
                 <div class="step-card">
                     <span class="step-label medium">INTERMEDIATE</span>
-                    <h3>5. Delete Online Accounts</h3>
+                    <h3>6. Delete Online Accounts</h3>
                     <p>
                         delete as many online accounts and apps as possible,
                         especially social media. not only is it good for your
@@ -1222,7 +1295,7 @@
 
                 <div class="step-card">
                     <span class="step-label medium">INTERMEDIATE</span>
-                    <h3>6. Regularly Erase Your Post/Message History</h3>
+                    <h3>7. Regularly Erase Your Post/Message History</h3>
                     <p>
                         as a general rule, you should never post anything on a
                         public-facing social platform that you aren't
@@ -1249,7 +1322,7 @@
 
                 <div class="step-card">
                     <span class="step-label medium">INTERMEDIATE</span>
-                    <h3>7. Compartmentalize</h3>
+                    <h3>8. Compartmentalize</h3>
                     <p>
                         your browsing habits and online accounts should be
                         compartmentalized with different browser profiles,
@@ -1281,7 +1354,7 @@
 
                 <div class="step-card">
                     <span class="step-label medium">INTERMEDIATE</span>
-                    <h3>8. Use Virtual, Disposable Cards (FIAT)</h3>
+                    <h3>9. Use Virtual, Disposable Cards (FIAT)</h3>
                     <p>
                         there's almost no reason to have your real information
                         associated with purchases you make online. many credit
@@ -1299,7 +1372,7 @@
 
                 <div class="step-card">
                     <span class="step-label medium">INTERMEDIATE</span>
-                    <h3>6. Reduce Your Browser Fingerprint</h3>
+                    <h3>10. Reduce Your Browser Fingerprint</h3>
                     <p>
                         your browser leaks a ton of information about you, even
                         without cookies. a combination of browser identifiers
@@ -1351,7 +1424,7 @@
 
                 <div class="step-card">
                     <span class="step-label hard">ADVANCED</span>
-                    <h3>9. Browse With Tor</h3>
+                    <h3>11. Browse With Tor</h3>
                     <p>
                         the
                         <a
@@ -1369,7 +1442,7 @@
 
                 <div class="step-card">
                     <span class="step-label hard">ADVANCED</span>
-                    <h3>10. Use Monero (XMR) For Online Purchases</h3>
+                    <h3>12. Use Monero (XMR) For Online Purchases</h3>
                     <p>
                         Monero is the gold standard for financial privacy. it's
                         an untraceable decentralized cryptocurrency that ensures
@@ -1396,7 +1469,7 @@
 
                 <div class="step-card">
                     <span class="step-label hard">ADVANCED</span>
-                    <h3>11. Switch Your Daily Operating System</h3>
+                    <h3>13. Switch Your Daily Operating System</h3>
                     <p>
                         for the desktop, the gold standard for everyday usage is
                         <a href="https://www.qubes-os.org" target="_blank"
@@ -1417,7 +1490,7 @@
 
                 <div class="step-card">
                     <span class="step-label hard">ADVANCED</span>
-                    <h3>12. Leave The Smartphone Behind</h3>
+                    <h3>14. Leave The Smartphone Behind</h3>
                     <p>
                         regardless of the operating system your phone is using,
                         good cellular network privacy is basically impossible.
@@ -1435,7 +1508,7 @@
                 </div>
 
                 <div class="step-card">
-                    <h3>13. Use Common Sense</h3>
+                    <h3>15. Use Common Sense</h3>
                     <p>
                         absolutely nothing you do matters if your behavior gives
                         you away. in the vast majority of cases, leaks caused by
