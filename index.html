@@ -8,6 +8,8 @@
             http-equiv="onion-location"
             content="http://a4zesawsbvj6zr5tgz35mepb4mjnewfmkwx4bev3kwyabch45ecp37ad.onion"
         />
+        <meta name="color-scheme" content="dark" />
+        <link rel="icon" href="av.webp" />
         <title>Vix</title>
         <style>
             :root {
@@ -128,6 +130,11 @@
                 transform: translateY(-1px);
             }
 
+            .link:focus-visible {
+                outline: 2px solid var(--fg-dim);
+                outline-offset: 2px;
+            }
+
             .link-left {
                 display: flex;
                 align-items: center;
@@ -190,6 +197,7 @@
 
             .ref-image {
                 width: 100%;
+                height: auto;
                 display: block;
             }
 
@@ -240,10 +248,17 @@
     <body>
         <div class="page">
             <div class="hero">
-                <img class="avatar" src="av.webp" alt="Vix" />
+                <img
+                    class="avatar"
+                    src="av.webp"
+                    alt="Vix"
+                    width="1027"
+                    height="1033"
+                />
                 <h1 class="name">Vix</h1>
                 <p class="bio">
-                    black cat pursuing a degree in cybersecurity. my primary interests include homelabbing, minimalism, music, and tech.
+                    black cat pursuing a degree in cybersecurity. my primary
+                    interests include homelabbing, minimalism, music, and tech.
                 </p>
             </div>
 
@@ -315,7 +330,13 @@
             <span class="eyebrow">My Fursona</span>
 
             <div class="ref-sheet">
-                <img src="ref.webp" alt="Vix ref sheet" class="ref-image" />
+                <img
+                    src="ref.webp"
+                    alt="Vix ref sheet"
+                    class="ref-image"
+                    width="2738"
+                    height="2219"
+                />
             </div>
 
             <div class="stats">
